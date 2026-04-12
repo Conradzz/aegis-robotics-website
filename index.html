@@ -4,18 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aegis Robotics — Sovereignty Through Technology</title>
-  <meta name="description" content="American-made robots, AI computers, and tools you truly own. No cloud gatekeepers. No foreign kill switches. Sign up to be first in line.">
-  <meta property="og:title" content="Aegis Robotics — Sovereignty Through Technology">
-  <meta property="og:description" content="American-made robots and AI you actually own. Be first in line.">
+  <meta name="description" content="American-made robots, AI computers, and tools you truly own. No foreign firmware. No corporate kill switches. Launching on Kickstarter 2026.">
+  <meta property="og:title" content="Aegis Robotics — American-Made Robots & AI You Actually Own">
+  <meta property="og:description" content="We build robots, AI computers, and maker tools designed, manufactured, and assembled in America. Launching on Kickstarter 2026.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:image" content="logo.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
   <!-- AEGIS Fonts: Space Grotesk (display), Literata (body), JetBrains Mono (data), Cinzel (accent) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Literata:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Literata:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@600;700&family=Orbitron:wght@700;800;900&family=Zen+Dots&family=Audiowide&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
 
   <style>
+    /* ============================================
+       @property — ANIMATABLE CUSTOM PROPERTIES
+       ============================================ */
+    @property --gradient-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @property --glow-spread {
+      syntax: "<length>";
+      initial-value: 4px;
+      inherits: false;
+    }
+    @property --glow-opacity {
+      syntax: "<number>";
+      initial-value: 0.4;
+      inherits: false;
+    }
+    @property --border-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @property --shimmer-pos {
+      syntax: "<percentage>";
+      initial-value: -100%;
+      inherits: false;
+    }
+
     /* ============================================
        AEGIS DESIGN SYSTEM TOKENS
        ============================================ */
@@ -34,8 +64,8 @@
       --purple-deep: #2D1B69;
       --purple-royal: #4A2C9A;
       --purple-mist: #7B5FC0;
-      --lavender-silver: #B8A9DC;
-      --lavender-pale: #D4CAF0;
+      --lavender-silver: #7B5FC0;
+      --lavender-pale: #7B5FC0;
 
       --green-deep: #003D14;
       --green-core: #0BAA2E;
@@ -49,12 +79,13 @@
       --gold-bright: #F5A623;
       --gold-ethereal: #FFD580;
 
-      --text-primary: #E8E4F8;
-      --text-secondary: #B8A9DC;
+      --text-primary: #9B8AC4;
+      --text-secondary: #7B5FC0;
       --text-muted: #7B6FA0;
       --text-ghost: #4A4268;
 
       --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* ============================================
@@ -69,16 +100,19 @@
       font-size: 16px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
       min-height: 100vh;
     }
 
+    /* Styled scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-void); }
     ::-webkit-scrollbar-thumb { background: rgba(184,169,220,0.25); border-radius: 4px; }
+    html { scrollbar-color: rgba(184,169,220,0.25) var(--bg-void); }
 
     /* ============================================
-       ATMOSPHERIC BACKGROUND
+       ATMOSPHERIC BACKGROUND — layered depth + noise
        ============================================ */
     body::before {
       content: '';
@@ -87,20 +121,207 @@
       background:
         radial-gradient(ellipse 80% 60% at 20% 15%, rgba(74, 44, 154, 0.22) 0%, transparent 60%),
         radial-gradient(ellipse 60% 40% at 85% 70%, rgba(34, 221, 62, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 40% 30% at 70% 10%, rgba(245, 166, 35, 0.05) 0%, transparent 50%);
-      z-index: -2;
+        radial-gradient(ellipse 40% 30% at 70% 10%, rgba(245, 166, 35, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 80% at 50% 100%, rgba(74, 44, 154, 0.12) 0%, transparent 60%);
+      z-index: -3;
       pointer-events: none;
     }
+
+    /* Grid overlay — visible enough to feel like a HUD */
     body::after {
       content: '';
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background-image:
-        linear-gradient(rgba(122,90,220,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(122,90,220,0.025) 1px, transparent 1px);
+        linear-gradient(rgba(122,90,220,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122,90,220,0.045) 1px, transparent 1px);
       background-size: 60px 60px;
       z-index: -1;
       pointer-events: none;
+    }
+
+    /* SVG noise texture overlay */
+    .noise-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.35;
+      mix-blend-mode: overlay;
+    }
+
+    /* ============================================
+       ANIMATED GRADIENT TEXT
+       ============================================ */
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .gradient-text {
+      background: linear-gradient(
+        90deg,
+        var(--green-bright) 0%,
+        var(--green-electric) 30%,
+        var(--purple-mist) 60%,
+        var(--green-bright) 100%
+      );
+      background-size: 200% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 12s ease-in-out infinite;
+    }
+
+    .gradient-text-gold {
+      background: linear-gradient(
+        90deg,
+        var(--gold-bright) 0%,
+        var(--gold-ethereal) 30%,
+        var(--purple-mist) 60%,
+        var(--gold-bright) 100%
+      );
+      background-size: 200% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 14s ease-in-out infinite;
+    }
+
+    /* ============================================
+       BREATHING GLOW
+       ============================================ */
+    @keyframes breathe-glow {
+      0%, 100% { --glow-spread: 4px; --glow-opacity: 0.4; }
+      50% { --glow-spread: 18px; --glow-opacity: 0.7; }
+    }
+
+    .glow-green {
+      animation: breathe-glow 3s ease-in-out infinite;
+      text-shadow:
+        0 0 var(--glow-spread) rgba(63, 255, 85, var(--glow-opacity)),
+        0 0 calc(var(--glow-spread) * 2) rgba(34, 221, 62, calc(var(--glow-opacity) * 0.4));
+    }
+
+    .glow-gold {
+      animation: breathe-glow 4s ease-in-out infinite;
+      text-shadow:
+        0 0 var(--glow-spread) rgba(245, 166, 35, var(--glow-opacity)),
+        0 0 calc(var(--glow-spread) * 2) rgba(196, 125, 14, calc(var(--glow-opacity) * 0.4));
+    }
+
+    /* ============================================
+       ANIMATED BORDER (spinning conic gradient)
+       ============================================ */
+    @keyframes border-spin {
+      0% { --border-angle: 0deg; }
+      100% { --border-angle: 360deg; }
+    }
+
+    .animated-border {
+      position: relative;
+      border: none !important;
+      background: var(--panel-dim);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      border-radius: 12px;
+      isolation: isolate;
+    }
+    .animated-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 13px;
+      padding: 1px;
+      background: conic-gradient(
+        from var(--border-angle),
+        transparent 0%,
+        rgba(63, 255, 85, 0.5) 10%,
+        transparent 20%,
+        transparent 50%,
+        rgba(63, 255, 85, 0.3) 60%,
+        transparent 70%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: border-spin 4s linear infinite;
+      z-index: -1;
+    }
+
+    /* Glow behind the animated border card */
+    .animated-border::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: conic-gradient(
+        from var(--border-angle),
+        transparent 0%,
+        rgba(63, 255, 85, 0.15) 10%,
+        transparent 20%,
+        transparent 50%,
+        rgba(63, 255, 85, 0.1) 60%,
+        transparent 70%
+      );
+      filter: blur(12px);
+      animation: border-spin 4s linear infinite;
+      z-index: -2;
+    }
+
+    /* ============================================
+       SHIMMER EFFECT
+       ============================================ */
+    @keyframes shimmer {
+      0% { --shimmer-pos: -100%; }
+      100% { --shimmer-pos: 200%; }
+    }
+
+    .shimmer {
+      position: relative;
+      overflow: hidden;
+    }
+    .shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: var(--shimmer-pos);
+      width: 60%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.06),
+        rgba(255, 255, 255, 0.03),
+        transparent
+      );
+      animation: shimmer 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* ============================================
+       SCANLINE (subtle horizontal sweep)
+       ============================================ */
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    .scanline {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(63, 255, 85, 0.08),
+        rgba(63, 255, 85, 0.15),
+        rgba(63, 255, 85, 0.08),
+        transparent
+      );
+      z-index: 9999;
+      pointer-events: none;
+      animation: scanline 8s linear infinite;
     }
 
     /* ============================================
@@ -112,6 +333,15 @@
       line-height: 1.15;
       color: var(--text-primary);
     }
+    .cinzel { font-family: 'Cinzel', serif; }
+    .label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
 
     /* ============================================
        LAYOUT
@@ -124,33 +354,59 @@
     section { padding: 80px 0; }
 
     /* ============================================
-       DIVIDERS
+       DIVIDERS — animated gradient line
        ============================================ */
     .divider {
       height: 1px;
       border: none;
       background: linear-gradient(90deg, transparent, rgba(74, 44, 154, 0.30) 30%, rgba(122, 90, 220, 0.20) 50%, rgba(74, 44, 154, 0.15) 70%, transparent);
+      position: relative;
+      overflow: hidden;
     }
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(63, 255, 85, 0.3), transparent);
+      animation: divider-sweep 4s ease-in-out infinite;
+    }
+    @keyframes divider-sweep {
+      0% { left: -50%; }
+      100% { left: 150%; }
+    }
+
     .gold-divider {
       height: 1px;
       border: none;
       background: linear-gradient(90deg, transparent, rgba(245,166,35,0.25), rgba(196,125,14,0.15), transparent);
+      position: relative;
+      overflow: hidden;
     }
+    .gold-divider::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(245, 166, 35, 0.4), transparent);
+      animation: divider-sweep 5s ease-in-out infinite;
+    }
+
     .underline-green {
       width: 40px;
       height: 2px;
       background: linear-gradient(90deg, var(--green-bright), transparent);
       margin-top: 8px;
+      box-shadow: 0 0 8px rgba(63, 255, 85, 0.3);
     }
     .underline-gold {
       width: 40px;
       height: 2px;
       background: linear-gradient(90deg, var(--gold-bright), transparent);
       margin-top: 8px;
+      box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
     }
 
     /* ============================================
-       AEGIS CARD
+       AEGIS GLASS CARD
        ============================================ */
     .card {
       background: var(--panel-dim);
@@ -163,14 +419,30 @@
         0 0 0 1px rgba(63, 255, 85, 0.06),
         0 8px 32px rgba(5, 3, 10, 0.40),
         0 0 24px rgba(74, 44, 154, 0.12);
+      transition: border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+    }
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.10);
+      box-shadow:
+        0 0 0 1px rgba(63, 255, 85, 0.10),
+        0 8px 40px rgba(5, 3, 10, 0.50),
+        0 0 40px rgba(74, 44, 154, 0.18);
+      transform: translateY(-2px);
     }
 
-    /* Corner brackets */
+    /* Featured card — uses animated-border instead of static border */
+    .card-featured {
+      border-color: transparent;
+    }
+
+    /* Corner brackets — green default */
     .brackets { position: relative; }
     .brackets::before, .brackets::after {
       content: '';
       position: absolute;
       width: 14px; height: 14px;
+      pointer-events: none;
+      transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
     }
     .brackets::before {
       top: -1px; left: -1px;
@@ -182,29 +454,53 @@
       border-bottom: 1px solid rgba(63, 255, 85, 0.30);
       border-right: 1px solid rgba(63, 255, 85, 0.30);
     }
+    .brackets:hover::before, .brackets:hover::after {
+      width: 24px; height: 24px;
+      border-color: rgba(63, 255, 85, 0.6);
+    }
+    /* Gold bracket variant */
     .brackets-gold::before {
       border-color: rgba(245, 166, 35, 0.25);
     }
     .brackets-gold::after {
       border-color: rgba(245, 166, 35, 0.25);
     }
+    .brackets-gold:hover::before, .brackets-gold:hover::after {
+      border-color: rgba(245, 166, 35, 0.5);
+    }
 
     /* ============================================
-       LABEL
+       STATUS CHIPS
        ============================================ */
-    .label {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 12px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .mono {
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      background: rgba(5, 3, 10, 0.60);
+      border-radius: 4px;
+      padding: 4px 10px;
+      transition: box-shadow 0.2s var(--ease-out);
+    }
+    .chip-green {
+      color: var(--green-electric);
+      border: 1px solid rgba(63, 255, 85, 0.20);
+    }
+    .chip-green:hover {
+      box-shadow: 0 0 8px rgba(63, 255, 85, 0.2);
+    }
+    .chip-gold {
+      color: var(--gold-bright);
+      border: 1px solid rgba(245, 166, 35, 0.25);
+    }
+    .chip-gold:hover {
+      box-shadow: 0 0 8px rgba(245, 166, 35, 0.2);
     }
 
     /* ============================================
-       CTA BUTTON (only one per page)
+       CTA BUTTON — glow + shimmer
        ============================================ */
     .cta-btn {
       display: inline-flex;
@@ -225,11 +521,29 @@
       transition: all 0.2s var(--ease-out);
       text-decoration: none;
       white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      animation: btn-breathe 3s ease-in-out infinite;
+    }
+    @keyframes btn-breathe {
+      0%, 100% { box-shadow: 0 0 12px rgba(63, 255, 85, 0.20), inset 0 0 12px rgba(63, 255, 85, 0.05); }
+      50% { box-shadow: 0 0 24px rgba(63, 255, 85, 0.35), inset 0 0 16px rgba(63, 255, 85, 0.10); }
+    }
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s var(--ease-out);
+    }
+    .cta-btn:hover::after {
+      left: 100%;
     }
     .cta-btn:hover {
       background: rgba(34, 221, 62, 0.25);
       border-color: rgba(63, 255, 85, 0.80);
-      box-shadow: 0 0 20px rgba(63, 255, 85, 0.35), inset 0 0 16px rgba(63, 255, 85, 0.10);
+      box-shadow: 0 0 30px rgba(63, 255, 85, 0.40), inset 0 0 16px rgba(63, 255, 85, 0.10);
+      transform: translateY(-1px);
     }
     .cta-btn:active {
       background: rgba(34, 221, 62, 0.35);
@@ -237,7 +551,7 @@
     }
 
     /* ============================================
-       EMAIL INPUT
+       EMAIL INPUT — glow on focus
        ============================================ */
     .email-input {
       background: rgba(5, 3, 10, 0.60);
@@ -249,95 +563,310 @@
       padding: 14px 16px;
       width: 100%;
       outline: none;
-      transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+      transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
     }
     .email-input::placeholder { color: var(--text-ghost); }
     .email-input:focus {
       border-color: rgba(63, 255, 85, 0.50);
-      box-shadow: 0 0 0 3px rgba(63, 255, 85, 0.08), 0 0 16px rgba(63, 255, 85, 0.12);
+      box-shadow: 0 0 0 3px rgba(63, 255, 85, 0.08), 0 0 20px rgba(63, 255, 85, 0.15);
+    }
+
+    /* Signup row */
+    .signup-row {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
     }
 
     /* ============================================
-       GLOW PULSE
+       SCROLL-DRIVEN ANIMATIONS
        ============================================ */
-    @keyframes glow-pulse {
-      0%, 100% { box-shadow: 0 0 6px rgba(63, 255, 85, 0.40); }
-      50% { box-shadow: 0 0 14px rgba(63, 255, 85, 0.80); }
-    }
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #2ECC71;
-      display: inline-block;
-      animation: glow-pulse 2.5s ease-in-out infinite;
+    @keyframes scroll-reveal {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* ============================================
-       SCROLL REVEAL
-       ============================================ */
     .reveal {
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+      animation: scroll-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 25%;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
+
+    /* Stagger children using animation-delay */
+    .reveal-stagger > .reveal:nth-child(2) { animation-range: entry 3% entry 28%; }
+    .reveal-stagger > .reveal:nth-child(3) { animation-range: entry 6% entry 31%; }
+    .reveal-stagger > .reveal:nth-child(4) { animation-range: entry 9% entry 34%; }
+
+    /* Hero uses entrance animation instead of scroll-driven */
+    .hero-reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: hero-entrance 0.8s var(--ease-out) forwards;
+    }
+    .hero-reveal:nth-child(2) { animation-delay: 0.15s; }
+    .hero-reveal:nth-child(3) { animation-delay: 0.3s; }
+    .hero-reveal:nth-child(4) { animation-delay: 0.45s; }
+    .hero-reveal:nth-child(5) { animation-delay: 0.6s; }
+    .hero-reveal:nth-child(6) { animation-delay: 0.75s; }
+    .hero-reveal:nth-child(7) { animation-delay: 0.9s; }
+
+    @keyframes hero-entrance {
+      0% { opacity: 0; transform: translateY(16px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     /* ============================================
-       RESPONSIVE
+       COMPANY NAME — large presence
+       ============================================ */
+    .company-name {
+      font-family: 'Zen Dots', sans-serif;
+      font-weight: 400;
+      font-size: 24px;
+      letter-spacing: 0.12em;
+      background: linear-gradient(
+        90deg,
+        var(--green-electric) 0%,
+        var(--green-bright) 35%,
+        var(--purple-mist) 65%,
+        var(--green-electric) 100%
+      );
+      background-size: 200% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 10s ease-in-out infinite;
+    }
+
+    /* ============================================
+       VALUES GRID — Bento style
+       ============================================ */
+    .values-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .value-item {
+      padding: 24px;
+      background: var(--panel-dim);
+      backdrop-filter: blur(12px) saturate(1.3);
+      -webkit-backdrop-filter: blur(12px) saturate(1.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+    .value-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245, 166, 35, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s var(--ease-out);
+    }
+    .value-item:hover {
+      border-color: rgba(245, 166, 35, 0.15);
+      box-shadow: 0 8px 32px rgba(5, 3, 10, 0.4), 0 0 24px rgba(245, 166, 35, 0.06);
+      transform: translateY(-2px);
+    }
+    .value-item:hover::before {
+      opacity: 1;
+    }
+    .value-item h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .value-item p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ============================================
+       FOOTER LINK
+       ============================================ */
+    .footer-link {
+      color: var(--text-ghost);
+      text-decoration: none;
+      transition: color 0.2s var(--ease-out);
+    }
+    .footer-link:hover {
+      color: var(--purple-mist);
+    }
+
+    /* ============================================
+       FLOATING PARTICLES (CSS only)
+       ============================================ */
+    .particles {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: rgba(63, 255, 85, 0.3);
+      border-radius: 50%;
+      animation: float-up linear infinite;
+    }
+    .particle:nth-child(1) { left: 10%; animation-duration: 18s; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 25%; animation-duration: 22s; animation-delay: 3s; width: 1px; height: 1px; background: rgba(184,169,220,0.3); }
+    .particle:nth-child(3) { left: 45%; animation-duration: 16s; animation-delay: 6s; }
+    .particle:nth-child(4) { left: 65%; animation-duration: 20s; animation-delay: 2s; width: 1px; height: 1px; background: rgba(245, 166, 35, 0.2); }
+    .particle:nth-child(5) { left: 80%; animation-duration: 24s; animation-delay: 8s; }
+    .particle:nth-child(6) { left: 35%; animation-duration: 19s; animation-delay: 4s; width: 1px; height: 1px; background: rgba(184,169,220,0.2); }
+    .particle:nth-child(7) { left: 55%; animation-duration: 21s; animation-delay: 1s; }
+    .particle:nth-child(8) { left: 90%; animation-duration: 17s; animation-delay: 7s; width: 1px; height: 1px; background: rgba(63, 255, 85, 0.2); }
+
+    @keyframes float-up {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; transform: translateY(90vh) scale(1); }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+    }
+
+    /* ============================================
+       HUD CORNER MARKS (page-level)
+       ============================================ */
+    .hud-corner {
+      position: fixed;
+      width: 40px; height: 40px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-corner--tl { top: 16px; left: 16px; border-top: 1px solid rgba(63,255,85,0.15); border-left: 1px solid rgba(63,255,85,0.15); }
+    .hud-corner--tr { top: 16px; right: 16px; border-top: 1px solid rgba(63,255,85,0.15); border-right: 1px solid rgba(63,255,85,0.15); }
+    .hud-corner--bl { bottom: 16px; left: 16px; border-bottom: 1px solid rgba(63,255,85,0.15); border-left: 1px solid rgba(63,255,85,0.15); }
+    .hud-corner--br { bottom: 16px; right: 16px; border-bottom: 1px solid rgba(63,255,85,0.15); border-right: 1px solid rgba(63,255,85,0.15); }
+
+    /* ============================================
+       RESPONSIVE — MOBILE FIRST
        ============================================ */
     @media (max-width: 640px) {
       section { padding: 56px 0; }
+      .wrap { padding: 0 20px; }
       .card { padding: 24px; }
-      .signup-row { flex-direction: column; }
-      .signup-row .cta-btn { width: 100%; justify-content: center; }
+      .signup-row {
+        flex-direction: column;
+      }
+      .signup-row .cta-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .values-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .value-item { padding: 20px; }
+      .hero-headline {
+        font-size: 32px !important;
+      }
+      .founder-lead {
+        font-size: 20px;
+      }
+      .company-name {
+        font-size: 18px;
+      }
+      .hud-corner { display: none; }
+    }
+
+    @media (min-width: 641px) and (max-width: 768px) {
+      .values-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- SVG noise texture -->
+  <svg class="noise-overlay" width="100%" height="100%">
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise)"/>
+  </svg>
+
+  <!-- Scanline sweep -->
+  <div class="scanline"></div>
+
+  <!-- Floating particles -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- HUD corner marks -->
+  <div class="hud-corner hud-corner--tl"></div>
+  <div class="hud-corner hud-corner--tr"></div>
+  <div class="hud-corner hud-corner--bl"></div>
+  <div class="hud-corner hud-corner--br"></div>
+
   <!-- ==================== HERO — THE HOOK ==================== -->
-  <section style="min-height: 100vh; display: flex; align-items: center;">
+  <section style="min-height: 100vh; min-height: 100dvh; display: flex; align-items: center;">
     <div class="wrap">
-      <div class="reveal">
-        <!-- Logo -->
-        <div style="margin-bottom: 48px;">
-          <img src="/logo.png" alt="Aegis Robotics" style="height: 56px; width: auto;">
-        </div>
+      <!-- Logo + Company Name — left aligned -->
+      <div class="hero-reveal" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 48px;">
+        <img src="logo.png" alt="Aegis Robotics" style="height: 200px; width: auto;" width="158" height="200">
+        <span class="company-name" style="font-size: 90px; white-space: nowrap;">AEGIS ROBOTICS</span>
+      </div>
 
-        <!-- Tag -->
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-          <div style="width: 32px; height: 2px; background: linear-gradient(90deg, var(--green-bright), transparent);"></div>
-          <span class="mono" style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-bright);">Sovereignty Through Technology</span>
-        </div>
+      <!-- Tag with gold warmth above the fold -->
+      <div class="hero-reveal" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+        <div style="width: 32px; height: 2px; background: linear-gradient(90deg, var(--gold-bright), transparent); box-shadow: 0 0 6px rgba(245,166,35,0.3);"></div>
+        <span class="mono glow-gold" style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright);">Sovereignty Through Technology</span>
+      </div>
 
-        <!-- Headline -->
-        <h1 style="font-size: clamp(36px, 7vw, 60px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 24px;">
-          American-Made Robots.<br>
-          <span style="color: var(--lavender-silver);">AI You Actually Own.</span>
-        </h1>
+      <!-- Headline -->
+      <h1 class="hero-reveal hero-headline" style="font-size: clamp(28px, 5vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 24px;">
+        <span class="gradient-text">American-Made Robots.</span><br>
+        <span class="gradient-text" style="animation-delay: -6s;">AI You Actually Own.</span>
+      </h1>
 
-        <!-- One paragraph — the pitch -->
-        <p style="font-size: 18px; color: var(--text-secondary); max-width: 540px; line-height: 1.75; margin-bottom: 40px;">
-          We're building robots, AI computers, and tools that belong to you — not a corporation, not a foreign government. Everything runs locally. Nothing phones home. Launching soon.
-        </p>
+      <!-- One paragraph — the pitch -->
+      <p class="hero-reveal" style="font-size: 18px; color: var(--text-secondary); max-width: 540px; line-height: 1.75; margin-bottom: 40px;">
+        We design and manufacture robots, AI computers, and maker tools in America. Your data stays yours. Your hardware answers to you. No foreign firmware, no corporate kill switches.
+      </p>
 
-        <!-- THE CTA — email capture, above the fold -->
-        <form id="signup-form" class="signup-row" style="display: flex; gap: 12px; max-width: 480px; margin-bottom: 12px;">
-          <input type="email" id="email" placeholder="you@email.com" required class="email-input" style="flex: 1;">
-          <button type="submit" class="cta-btn">Get Early Access</button>
-        </form>
-        <p id="signup-msg" style="display: none; font-size: 13px;" class="mono"></p>
-        <p class="mono" style="color: var(--text-ghost); font-size: 11px;">No spam. Just signal. Be first in line when we launch.</p>
+      <!-- THE CTA — email capture, above the fold -->
+      <form id="signup-hero" class="hero-reveal signup-row" style="margin-bottom: 12px;">
+        <input type="email" id="email-hero" placeholder="you@email.com" required class="email-input" aria-label="Email address" style="flex: 1;">
+        <button type="submit" class="cta-btn">Get Early Access</button>
+      </form>
+      <p id="signup-msg-hero" class="hero-reveal" style="display: none; font-size: 13px;" class="mono" role="status" aria-live="polite"></p>
+      <p class="hero-reveal mono" style="color: var(--text-ghost); font-size: 11px;">Join the list. First backers get priority when we launch on Kickstarter.</p>
 
-        <!-- Gold warmth above the fold -->
-        <div style="margin-top: 48px; display: flex; align-items: center; gap: 10px;">
-          <div style="width: 24px; height: 1px; background: linear-gradient(90deg, var(--gold-bright), transparent);"></div>
-          <span class="mono" style="font-size: 11px; color: var(--gold-warm); letter-spacing: 0.06em;">MADE IN AMERICA · OWNED BY YOU</span>
-        </div>
+      <!-- Gold identity marker -->
+      <div class="hero-reveal" style="margin-top: 48px; display: flex; align-items: center; gap: 10px;">
+        <div style="width: 24px; height: 1px; background: linear-gradient(90deg, var(--gold-warm), transparent); box-shadow: 0 0 4px rgba(196,125,14,0.3);"></div>
+        <span class="mono" style="font-size: 11px; color: var(--gold-warm); letter-spacing: 0.06em;">MADE IN AMERICA &middot; OWNED BY YOU</span>
       </div>
     </div>
   </section>
@@ -347,126 +876,146 @@
   <section>
     <div class="wrap">
       <div class="reveal" style="margin-bottom: 48px;">
-        <span class="label" style="color: var(--gold-bright);">Why This Matters</span>
+        <span class="label glow-gold" style="color: var(--gold-bright);">Why This Matters</span>
         <div class="underline-gold"></div>
       </div>
 
       <div class="reveal" style="margin-bottom: 40px;">
-        <h2 style="font-size: 28px; margin-bottom: 20px;">The technology in your home should answer to you.</h2>
+        <h2 style="font-size: 28px; margin-bottom: 20px;">The technology in your home should answer to <span class="gradient-text-gold">you.</span></h2>
         <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.8;">
           Chinese robotics companies are racing to put their robots in American households — devices that run foreign firmware, phone home to foreign servers, and could be remotely disabled with the flip of a switch. 3D printer manufacturers are locking down what you're allowed to print. Every major AI product is a subscription to someone else's computer.
         </p>
       </div>
 
       <div class="reveal">
-        <p style="color: var(--lavender-pale); font-size: 17px; line-height: 1.8;">
-          AI is no longer optional — it's a shift on the scale of the plow or the automobile. The question isn't whether your household will need AI. It's whether you'll own it or rent it. We're building the option where you own it. All of it.
+        <p style="color: var(--purple-mist); font-size: 17px; line-height: 1.8;">
+          AI is no longer optional — it's a shift on the scale of the plow or the automobile. The question isn't whether your household will need AI. It's whether you'll own it or rent it. We're building the option where you own it.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- ==================== WHAT WE'RE BUILDING — PRODUCT TEASE ==================== -->
+  <!-- ==================== CORE VALUES ==================== -->
   <div class="gold-divider"></div>
   <section>
     <div class="wrap">
       <div class="reveal" style="margin-bottom: 48px;">
-        <span class="label" style="color: var(--green-bright);">What We're Building</span>
+        <span class="label cinzel glow-gold" style="color: var(--gold-bright); font-size: 13px; letter-spacing: 0.08em;">What We Stand For</span>
+        <div class="underline-gold"></div>
+      </div>
+
+      <div class="values-grid reveal-stagger">
+        <div class="value-item reveal shimmer">
+          <h3 style="color: var(--gold-ethereal);">Sovereignty</h3>
+          <p>You own your hardware, your data, your designs, and your AI. No one can flip a switch and take that away.</p>
+        </div>
+        <div class="value-item reveal shimmer">
+          <h3 style="color: var(--gold-ethereal);">Made in America</h3>
+          <p>The only robots that should be in American households are American robots. We design, manufacture, and assemble here.</p>
+        </div>
+        <div class="value-item reveal shimmer">
+          <h3 style="color: var(--gold-ethereal);">Maker Spirit</h3>
+          <p>We make everything ourselves. Nobody takes as much pride or care about your things as you do. Built by makers, for makers.</p>
+        </div>
+        <div class="value-item reveal shimmer">
+          <h3 style="color: var(--gold-ethereal);">Freedom to Create</h3>
+          <p>Your printer prints what you tell it to. Your CNC cuts what you design. No cloud scanning, no approval queues. Your tools, your rules.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WHAT WE'RE BUILDING — PRODUCT TEASE ==================== -->
+  <div class="divider"></div>
+  <section>
+    <div class="wrap">
+      <div class="reveal" style="margin-bottom: 48px;">
+        <span class="label glow-green" style="color: var(--green-bright);">What We're Building</span>
         <div class="underline-green"></div>
       </div>
 
-      <!-- Bastion — the core product -->
-      <div class="card brackets reveal" style="margin-bottom: 24px;">
+      <!-- Conrad — first hardware product / Kickstarter lead — FEATURED -->
+      <div class="card animated-border reveal" style="margin-bottom: 24px; padding: 32px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
           <span class="dot"></span>
-          <span class="label" style="color: var(--gold-bright);">The Core</span>
+          <span class="label" style="color: var(--green-bright);">Kickstarter 2026</span>
         </div>
-        <h3 style="font-size: 24px; margin-bottom: 12px;">Bastion — Your AI Computer</h3>
+        <h3 style="font-size: 24px; margin-bottom: 12px;"><span class="gradient-text">Conrad</span> &mdash; Robot Dog</h3>
         <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
-          A purpose-built computer that runs your digital familiar — a personal AI that knows you, your family, and your home. It manages your email, calendar, 3D prints, robots, and your children's education. Runs entirely on your hardware. Voice is the primary input. Nothing leaves your house.
+          Home patrol, utility carrier, maker's best friend. Designed in-house, manufactured in America. Available as a full DIY kit, partial kit (you print the frame, we supply the metal and electronics), or fully assembled. Our first product — and your chance to back American robotics from day one.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-          <span class="mono" style="font-size: 11px; color: var(--green-electric); background: rgba(5,3,10,0.6); border: 1px solid rgba(63,255,85,0.2); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">LOCAL AI</span>
-          <span class="mono" style="font-size: 11px; color: var(--green-electric); background: rgba(5,3,10,0.6); border: 1px solid rgba(63,255,85,0.2); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">VOICE-FIRST</span>
-          <span class="mono" style="font-size: 11px; color: var(--green-electric); background: rgba(5,3,10,0.6); border: 1px solid rgba(63,255,85,0.2); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">ZERO CLOUD</span>
+          <span class="chip chip-green">DIY KITS</span>
+          <span class="chip chip-green">PREASSEMBLED</span>
+          <span class="chip chip-green">KICKSTARTER 2026</span>
         </div>
       </div>
 
-      <!-- Conrad — first hardware product / Kickstarter lead -->
-      <div class="card brackets brackets-gold reveal" style="margin-bottom: 24px;">
+      <!-- Bastion — the core -->
+      <div class="card brackets brackets-gold reveal shimmer" style="margin-bottom: 24px;">
         <div style="margin-bottom: 16px;">
-          <span class="label" style="color: var(--gold-bright);">First Robot</span>
+          <span class="label" style="color: var(--gold-bright);">The Ecosystem Core</span>
         </div>
-        <h3 style="font-size: 24px; margin-bottom: 12px;">Conrad — Robot Dog</h3>
+        <h3 style="font-size: 24px; margin-bottom: 12px;"><span class="gradient-text-gold">Bastion</span> &mdash; Your AI Computer</h3>
         <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
-          Home patrol, utility carrier, maker's best friend. Designed in-house, manufactured in America. Available as a full DIY kit, partial kit (you print the frame, we supply the metal and electronics), or fully assembled. Our first product — coming to Kickstarter.
+          A purpose-built computer that runs your digital familiar — a personal AI that knows you, your family, and your home. It manages your email, calendar, 3D prints, robots, and your children's education. Voice is the primary input. Your data stays on your hardware by default.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-          <span class="mono" style="font-size: 11px; color: var(--gold-bright); background: rgba(5,3,10,0.6); border: 1px solid rgba(245,166,35,0.25); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">DIY KITS</span>
-          <span class="mono" style="font-size: 11px; color: var(--gold-bright); background: rgba(5,3,10,0.6); border: 1px solid rgba(245,166,35,0.25); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">PREASSEMBLED</span>
-          <span class="mono" style="font-size: 11px; color: var(--gold-bright); background: rgba(5,3,10,0.6); border: 1px solid rgba(245,166,35,0.25); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em;">KICKSTARTER SOON</span>
+          <span class="chip chip-gold">LOCAL AI</span>
+          <span class="chip chip-gold">VOICE-FIRST</span>
+          <span class="chip chip-gold">YOUR HARDWARE</span>
         </div>
       </div>
 
-      <!-- The rest — brief tease -->
-      <div class="card reveal" style="padding: 24px;">
-        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.7;">
-          <span style="color: var(--text-primary);">And more coming:</span>
-          <span style="color: var(--green-bright);">AegisOS</span> (AI-native operating system) ·
-          <span style="color: var(--green-bright);">AegisCAD</span> (AI-powered design tool) ·
-          <span style="color: var(--gold-bright);">Cosmo</span> (autonomous drone) ·
-          <span style="color: var(--gold-bright);">Crucible</span> (unrestricted 3D printer / CNC) ·
-          <span style="color: var(--lavender-silver);">Iris</span> (VR/AR goggles) ·
-          <span style="color: var(--lavender-silver);">Perceptor</span> (hardware diagnostics) ·
-          <span style="color: var(--lavender-silver);">Spark</span> (mobile app)
+      <!-- Ecosystem tease -->
+      <div class="reveal" style="margin-top: 32px; padding: 0 4px;">
+        <p class="mono" style="color: var(--text-muted); font-size: 12px; letter-spacing: 0.04em;">
+          Conrad and Bastion are the beginning. The full Aegis ecosystem includes <span style="color: var(--green-bright);">AegisOS</span>, <span style="color: var(--green-bright);">AegisCAD</span>, <span style="color: var(--gold-bright);">Crucible</span>, and more — all designed to work together, all owned by you.
         </p>
       </div>
     </div>
   </section>
 
   <!-- ==================== FOUNDER — CREDIBILITY ==================== -->
-  <div class="divider"></div>
+  <div class="gold-divider"></div>
   <section>
     <div class="wrap">
       <div class="reveal" style="margin-bottom: 48px;">
-        <span class="label" style="color: var(--gold-bright);">Founder</span>
+        <span class="label glow-gold" style="color: var(--gold-bright);">Founder</span>
         <div class="underline-gold"></div>
       </div>
 
       <div class="reveal">
-        <h2 style="font-size: 28px; margin-bottom: 24px; font-family: 'Cinzel', serif;">Nathan Sharlaw</h2>
-        <p style="color: var(--lavender-pale); font-size: 17px; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; margin-bottom: 16px;" class="cinzel gradient-text-gold">Nathan Sharlaw</h2>
+        <p class="founder-lead" style="color: var(--purple-mist); font-size: 22px; margin-bottom: 32px; line-height: 1.4; font-family: 'Space Grotesk', sans-serif; font-weight: 600;">
           Union electrician. Self-taught programmer. Lifelong maker.
         </p>
         <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.85; margin-bottom: 20px;">
-          Nathan had a screwdriver in his hand before he could read — tearing apart VCRs at the junkyard his dad worked at, figuring out how things worked by taking them apart. He was raised to be self-sufficient: if something's broken, you fix it. If something doesn't exist, you build it. If you're going to do it, you do it right.
+          Nathan had a screwdriver in his hand before he could read — tearing apart VCRs at the junkyard his dad worked at. He taught himself programming as a kid to mod video games, attended a technical high school for CS, then started his own electronics repair business at 20 while entering the union electrician apprenticeship. Building with his hands by day, building with code by night.
         </p>
-        <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.85; margin-bottom: 20px;">
-          He taught himself programming as a kid so he could modify the video games he played. Attended a technical high school for computer programming, but hardware always pulled harder. At 20, he started his own electronics repair business on the side while entering the union electrician apprenticeship — building with his hands by day, building with code by night.
-        </p>
-        <p style="color: var(--lavender-pale); font-size: 15px; line-height: 1.85;">
-          Aegis Robotics exists because Nathan believes the things in your home should be built by people who take pride in their work, made in the country where they'll be used, and owned completely by the person who bought them.
+        <p style="color: var(--purple-mist); font-size: 15px; line-height: 1.85;">
+          Aegis exists because he believes the things in your home should be built by people who take pride in their work, made in the country where they'll be used, and owned completely by the person who bought them.
         </p>
       </div>
     </div>
   </section>
 
   <!-- ==================== SECOND CTA — EMAIL CAPTURE ==================== -->
-  <div class="gold-divider"></div>
+  <div class="divider"></div>
   <section>
     <div class="wrap" style="text-align: center;">
       <div class="reveal">
-        <h2 style="font-size: 28px; margin-bottom: 12px; font-family: 'Cinzel', serif;">Be First in Line</h2>
+        <h2 style="font-size: 28px; margin-bottom: 12px;" class="cinzel gradient-text-gold">Be First in Line</h2>
         <div class="underline-gold" style="margin: 0 auto 24px auto;"></div>
         <p style="color: var(--text-secondary); font-size: 16px; margin-bottom: 32px;">
-          Get notified when Conrad hits Kickstarter and when early access opens for the full Aegis ecosystem.
+          Conrad hits Kickstarter in 2026. Early list members get priority backing and first access to the full Aegis ecosystem.
         </p>
       </div>
-      <form id="signup-form-2" class="reveal signup-row" style="display: flex; gap: 12px; max-width: 480px; margin: 0 auto 12px auto;">
-        <input type="email" id="email-2" placeholder="you@email.com" required class="email-input" style="flex: 1;">
+      <form id="signup-bottom" class="reveal signup-row" style="margin: 0 auto 12px auto;">
+        <input type="email" id="email-bottom" placeholder="you@email.com" required class="email-input" aria-label="Email address" style="flex: 1;">
         <button type="submit" class="cta-btn">Get Early Access</button>
       </form>
-      <p id="signup-msg-2" style="display: none; font-size: 13px;" class="mono"></p>
+      <p id="signup-msg-bottom" style="display: none; font-size: 13px;" class="mono" role="status" aria-live="polite"></p>
       <p class="reveal mono" style="color: var(--text-ghost); font-size: 11px; margin-top: 8px;">No spam. Just signal.</p>
     </div>
   </section>
@@ -475,36 +1024,57 @@
   <footer style="border-top: 1px solid rgba(74, 44, 154, 0.12); padding: 40px 0;">
     <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="/logo.png" alt="Aegis" style="height: 24px;">
-        <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px;">AEGIS ROBOTICS LLC</span>
+        <img src="logo.png" alt="Aegis" style="height: 24px; width: auto;" width="19" height="24">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.02em;">AEGIS ROBOTICS</span>
       </div>
-      <p class="mono" style="color: var(--text-ghost); font-size: 11px;">
-        &copy; 2026 Aegis Robotics LLC
-      </p>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <a href="mailto:contact@43gis.com" class="footer-link mono" style="font-size: 11px;">contact@43gis.com</a>
+        <span class="mono" style="color: var(--text-ghost); font-size: 11px;">&copy; 2026</span>
+      </div>
     </div>
   </footer>
 
   <!-- ==================== SCRIPT ==================== -->
   <script>
-    // Scroll reveal
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    /* Fallback for browsers that don't support scroll-driven animations */
+    (function () {
+      if (!CSS.supports('animation-timeline', 'view()')) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        }, { threshold: 0.1 });
 
-    // Handle both signup forms
-    function handleSignup(formId, msgId) {
-      document.getElementById(formId).addEventListener('submit', e => {
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+          el.style.animation = 'none';
+          observer.observe(el);
+        });
+      }
+    })();
+
+    /* Placeholder signup handler — shows confirmation, no backend */
+    function wireSignup(formId, msgId) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
-        const msg = document.getElementById(msgId);
-        msg.textContent = "You're on the list. We'll be in touch.";
-        msg.style.display = 'block';
-        msg.style.color = 'var(--gold-bright)';
-        e.target.reset();
+        var msg = document.getElementById(msgId);
+        if (msg) {
+          msg.textContent = "You\u2019re on the list. We\u2019ll be in touch.";
+          msg.style.display = 'block';
+          msg.style.color = 'var(--gold-bright)';
+        }
+        form.reset();
       });
     }
-    handleSignup('signup-form', 'signup-msg');
-    handleSignup('signup-form-2', 'signup-msg-2');
+    wireSignup('signup-hero', 'signup-msg-hero');
+    wireSignup('signup-bottom', 'signup-msg-bottom');
   </script>
 
 </body>

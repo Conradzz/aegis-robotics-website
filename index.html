@@ -856,10 +856,13 @@
       </p>
 
       <!-- THE CTA — email capture, above the fold -->
-      <form id="signup-hero" class="hero-reveal signup-row" style="margin-bottom: 12px;">
-        <input type="email" id="email-hero" placeholder="you@email.com" required class="email-input" aria-label="Email address" style="flex: 1;">
-        <button type="submit" class="cta-btn">Get Early Access</button>
-      </form>
+      <div class="hero-reveal" style="display: flex; gap: 12px; margin-bottom: 12px; max-width: 560px; flex-wrap: wrap;">
+        <form id="signup-hero" class="signup-row" style="flex: 1; min-width: 280px;">
+          <input type="email" id="email-hero" placeholder="you@email.com" required class="email-input" aria-label="Email address" style="flex: 1;">
+          <button type="submit" class="cta-btn">Get Early Access</button>
+        </form>
+        <a href="https://discord.gg/e2ne8byy" target="_blank" rel="noopener" class="cta-btn" style="border-color: rgba(123, 95, 192, 0.50); color: var(--purple-mist); box-shadow: 0 0 12px rgba(123, 95, 192, 0.20), inset 0 0 12px rgba(123, 95, 192, 0.05); background: rgba(123, 95, 192, 0.15); animation: none;">Discord</a>
+      </div>
       <p id="signup-msg-hero" class="hero-reveal" style="display: none; font-size: 13px;" class="mono" role="status" aria-live="polite"></p>
       <p class="hero-reveal mono" style="color: var(--text-ghost); font-size: 11px;">Join the list. First backers get priority when we launch on Kickstarter.</p>
 

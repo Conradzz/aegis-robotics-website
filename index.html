@@ -1192,19 +1192,49 @@
       }
     })();
 
-    /* Placeholder signup handler — shows confirmation, no backend */
+    /* Mailchimp signup via JSONP (no CORS issues, no backend needed) */
     function wireSignup(formId, msgId) {
       var form = document.getElementById(formId);
       if (!form) return;
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        var emailInput = form.querySelector('input[type="email"]');
+        var email = emailInput ? emailInput.value.trim() : '';
+        if (!email) return;
         var msg = document.getElementById(msgId);
-        if (msg) {
-          msg.textContent = "You\u2019re on the list. We\u2019ll be in touch.";
-          msg.style.display = 'block';
-          msg.style.color = 'var(--gold-bright)';
-        }
-        form.reset();
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = 'Submitting\u2026'; }
+
+        /* Mailchimp JSONP subscribe endpoint */
+        var cbName = 'mc_cb_' + Date.now();
+        var url = 'https://43gis.us7.list-manage.com/subscribe/post-json?u=c33549860764b05d95cd93ae1&id=05a35a1864&EMAIL=' + encodeURIComponent(email) + '&c=' + cbName;
+        var script = document.createElement('script');
+        var cleanup = function () {
+          try { document.head.removeChild(script); } catch(_) {}
+          delete window[cbName];
+          if (btn) { btn.disabled = false; btn.textContent = 'Get Early Access'; }
+        };
+        window[cbName] = function (resp) {
+          if (msg) {
+            if (resp.result === 'success') {
+              msg.textContent = "You\u2019re on the list. We\u2019ll be in touch.";
+              msg.style.color = 'var(--gold-bright)';
+              form.reset();
+            } else {
+              var errText = (resp.msg || '').replace(/<a [^>]*>.*?<\/a>/gi, '').replace(/^\d+ - /, '');
+              msg.textContent = errText || 'Something went wrong. Try again.';
+              msg.style.color = '#ff6b6b';
+            }
+            msg.style.display = 'block';
+          }
+          cleanup();
+        };
+        script.src = url;
+        script.onerror = function () {
+          if (msg) { msg.textContent = 'Network error. Try again.'; msg.style.display = 'block'; msg.style.color = '#ff6b6b'; }
+          cleanup();
+        };
+        document.head.appendChild(script);
       });
     }
     wireSignup('signup-hero', 'signup-msg-hero');
